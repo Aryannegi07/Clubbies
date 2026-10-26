@@ -1,0 +1,24 @@
+# Build output
+backend/target/
+frontend/dist/
+frontend/node_modules/
+*.tsbuildinfo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+*.log
+Thumbs.db
+.DS_Store
+
+# Legacy runtime data
+legacy-original/**/.ds_data/
+legacy-original/**/__pycache__/

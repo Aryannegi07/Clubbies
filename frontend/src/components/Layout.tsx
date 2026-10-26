@@ -1,0 +1,18 @@
+import { useState } from 'react';
+import { Link, NavLink, Outlet, Navigate, useNavigate } from 'react-router-dom';
+import { Bell, ChevronRight, Compass, LogIn, Menu, ShieldCheck, Sparkles, Trophy, Users, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+
+export function Layout() {
+  const { user, logout } = useAuth(); const [open, setOpen] = useState(false); const navigate = useNavigate();
+  const nav = [{ to: '/clubs', label: 'Discover', icon: Compass }, { to: '/events', label: 'Events', icon: Sparkles }, { to: '/president-cup', label: 'President Cup', icon: Trophy }];
+  return <div className="app-shell"><header className="topbar"><Link className="brand" to="/"><span className="brand-mark">C</span><span>clubbies</span></Link><button className="mobile-toggle" aria-label="Toggle menu" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button><nav className={open ? 'main-nav open' : 'main-nav'}>{nav.map(({ to, label, icon: Icon }) => <NavLink key={to} to={to} onClick={() => setOpen(false)}><Icon size={16} />{label}</NavLink>)}{user && <NavLink to="/dashboard" onClick={() => setOpen(false)}><Users size={16} />Dashboard</NavLink>}</nav><div className="top-actions">{user ? <><Link className="icon-button" to="/notifications" aria-label="Notifications"><Bell size={18} /></Link><button className="avatar-button" onClick={() => navigate('/dashboard')} title={user.email}>{user.displayName.slice(0, 1).toUpperCase()}</button><button className="text-button" onClick={() => void logout()}>Sign out</button></> : <Link className="button button-small button-outline" to="/auth"><LogIn size={16} />Sign in</Link>}</div></header><main><Outlet /></main><footer className="footer"><div><div className="brand footer-brand"><span className="brand-mark">C</span><span>clubbies</span></div><p>One campus. Every club. One platform.</p></div><div className="footer-links"><Link to="/clubs">Explore clubs</Link><Link to="/events">Upcoming events</Link><Link to="/president-cup">President Cup</Link></div><span className="footer-note">Built for campus communities · {new Date().getFullYear()}</span></footer></div>;
+}
+export function PageHeader({ eyebrow, title, description, action }: { eyebrow?: string; title: string; description?: string; action?: React.ReactNode }) { return <div className="page-header"><div>{eyebrow && <div className="eyebrow">{eyebrow}</div>}<h1>{title}</h1>{description && <p>{description}</p>}</div>{action && <div>{action}</div>}</div>; }
+export function Loading() { return <div className="loading-state"><span className="spinner" />Loading your campus space…</div>; }
+export function EmptyState({ title, text, action }: { title: string; text: string; action?: React.ReactNode }) { return <div className="empty-state"><div className="empty-icon"><Compass size={22} /></div><h3>{title}</h3><p>{text}</p>{action}</div>; }
+export function Protected({ children }: { children: React.ReactNode }) { const { user, loading } = useAuth(); if (loading) return <Loading />; if (!user) return <NavigateToAuth />; return <>{children}</>; }
+function NavigateToAuth() { return <Navigate to="/auth" replace />; }
+export function StatusPill({ value }: { value: string }) { return <span className={`status-pill status-${value.toLowerCase().replaceAll('_', '-')}`}>{value.replaceAll('_', ' ')}</span>; }
+export function ArrowLink({ to, children }: { to: string; children: React.ReactNode }) { return <Link className="arrow-link" to={to}>{children}<ChevronRight size={15} /></Link>; }
+export function RoleBadge() { const { user } = useAuth(); return user ? <span className="role-badge"><ShieldCheck size={13} />{user.roles[0].replace('_', ' ')}</span> : null; }
